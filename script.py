@@ -54,20 +54,30 @@ def sjekk_flere_regnskap():
     nye_regnskap_meldinger = [] 
 
     for orgnr in FIRMAER:
+        # 1. Hent bedriftsnavn fra Enhetsregisteret
+        enhet_url = f"https://data.brreg.no/enhetsregisteret/api/enheter/{orgnr}"
+        bedriftsnavn = f"Org.nr {orgnr}" # Fallback hvis navnet ikke finnes
+        try:
+            enhet_resp = requests.get(enhet_url, headers=headers)
+            if enhet_resp.status_code == 200:
+                bedriftsnavn = enhet_resp.json().get("navn", bedriftsnavn)
+        except Exception:
+            pass
+
+        # 2. Hent regnskapsdata
         api_url = f"https://data.brreg.no/regnskapsregisteret/regnskap/{orgnr}"
         
         try:
             response = requests.get(api_url, headers=headers)
             
             if response.status_code == 404:
-                print(f"[{orgnr}] Fant ingen regnskap i registeret (404).")
+                print(f"[{bedriftsnavn}] Fant ingen regnskap i registeret (404).")
                 continue
                 
             response.raise_for_status()
             data = response.json()
             
             if isinstance(data, list):
-                # Trekker ut de 4 første tegnene (årstallet) fra "tilDato" 
                 registrerte_aar = [
                     int(item["regnskapsperiode"]["tilDato"][:4]) 
                     for item in data 
@@ -77,24 +87,24 @@ def sjekk_flere_regnskap():
                 continue
 
             if not registrerte_aar:
-                print(f"[{orgnr}] Klarte ikke å lese ut årstall fra regnskapsperioden.")
+                print(f"[{bedriftsnavn}] Klarte ikke å lese ut årstall fra regnskapsperioden.")
                 continue
 
             nyeste_aar = max(registrerte_aar)
             siste_kjente_aar = lagrede_data.get(orgnr, 0)
 
             if nyeste_aar > siste_kjente_aar:
-                melding = f"Org.nr {orgnr} har publisert regnskap for år {nyeste_aar}."
+                melding = f"{bedriftsnavn} ({orgnr}) har publisert regnskap for år {nyeste_aar}."
                 print(f"🚨 NYTT REGNSKAP: {melding}")
                 
                 nye_regnskap_meldinger.append(melding)
                 lagrede_data[orgnr] = nyeste_aar
                 oppdatert = True
             else:
-                print(f"[{orgnr}] Ingen nye regnskap. Nyeste er {siste_kjente_aar}.")
+                print(f"[{bedriftsnavn}] Ingen nye regnskap. Nyeste er {siste_kjente_aar}.")
 
         except requests.exceptions.RequestException as e:
-            print(f"[{orgnr}] Feil ved henting av data: {e}")
+            print(f"[{bedriftsnavn}] Feil ved henting av data: {e}")
 
     if oppdatert:
         with open(STATE_FILE, "w", encoding="utf-8") as f:
