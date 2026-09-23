@@ -14,8 +14,8 @@ FIRMAER = [
 STATE_FILE = "siste_regnskap.json"
 
 # E-post innstillinger (Husk å fylle inn dine egne)
-AVSENDER_EPOST = "din.epost@gmail.com" 
-MOTTAKER_EPOST = "din.epost@gmail.com"
+AVSENDER_EPOST = "larmorch@gmail.com" 
+MOTTAKER_EPOST = "larmorch@gmail.com"
 EPOST_PASSORD = os.environ.get("EPOST_PASSORD") 
 
 def send_epost(emne, innhold):
