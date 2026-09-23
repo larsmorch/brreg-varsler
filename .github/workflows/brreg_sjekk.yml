@@ -2,9 +2,10 @@ name: Sjekk Brønnøysundregistrene
 
 on:
   schedule:
-    # Kjører hver dag kl 08:00 UTC (09:00/10:00 norsk tid)
-    - cron: '0 8 * * *'
-  workflow_dispatch: # Gjør at du kan kjøre scriptet manuelt med en knapp
+    # Kjører kl 12:00 hver dag i norsk tidssone (håndterer sommertid/vintertid automatisk)
+    - cron: '0 12 * * *'
+      timezone: 'Europe/Oslo'
+  workflow_dispatch: # Gir deg en knapp for manuell kjøring
 
 jobs:
   sjekk-regnskap:
