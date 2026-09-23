@@ -2,7 +2,7 @@ name: Sjekk Brønnøysundregistrene
 
 on:
   schedule:
-    # Kjører en gang hver dag på angitt tidspunkt. Tidpunkt gitt for norsk tidssone (håndterer sommertid/vintertid automatisk)
+    # Kjører en gang hver dag på angitt tidspunkt. Tidpunkt gitt i UTC
     - cron: '14 20 * * *'
 
   workflow_dispatch: # Gir deg en knapp for manuell kjøring
