@@ -7,22 +7,22 @@ from email.message import EmailMessage
 import time
 
 # --- KONFIGURASJON ---
-FIRMAER = [
-    "911958821", # W. Giertsen AS
-    "986082506", # W. Giertsen Tunnel AS
-    "914323924", # W. Giertsen Energy Solutions AS
-    "918285040", # W. Giertsen Ventures AS
-    "989235699", # Managua AS
-    "911988844", # EMS Holding AS
-    "936760589", # Det Norske Aktieselskab af 1392 AS
-    "917071918", # Fias Company AS
-]
+# Henter inn organisasjonslisten fra miljøvariabel (GitHub Secret), inkludert kommentarer
+org_env = os.environ.get("ORG_LISTE")
+if org_env:
+    FIRMAER = eval(org_env)
+else:
+    # Lokal fallback-liste for testing på egen PC
+    FIRMAER = [
+        "984669151", # ODL
+        "923609016", # EQUINOR
+    ]
 
 STATE_FILE = "siste_regnskap.json"
 
-# E-post innstillinger
-AVSENDER_EPOST = "larmorch@gmail.com" 
-MOTTAKER_EPOST = "larmorch@gmail.com"
+# E-post innstillinger (henter fra miljøvariabler med lokal fallback)
+AVSENDER_EPOST = os.environ.get("AVSENDER_EPOST", "din.epost@gmail.com") 
+MOTTAKER_EPOST = os.environ.get("MOTTAKER_EPOST", "din.epost@gmail.com")
 EPOST_PASSORD = os.environ.get("EPOST_PASSORD") 
 
 def send_epost(emne, innhold):
