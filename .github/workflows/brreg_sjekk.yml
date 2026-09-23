@@ -30,13 +30,12 @@ jobs:
         run: python script.py
 
       - name: Lagre endringer tilbake til GitHub
-        run: |
-          # Sett opp hvem som committer (GitHub Bot)
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Forsøk å legge til json-filen hvis den ble opprettet eller endret
-          git add siste_regnskap.json || true
-          
-          # Sjekk om det er endringer. Hvis ja, lagre (commit) og push (last opp).
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Oppdatert status for regnskap" && git push)
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+        # Legger til alle nye/endrede filer automatisk, uten å krasje hvis de mangler
+        git add -A
+      
+        # Committer og pusher kun hvis det faktisk er gjort en endring
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Oppdatert status for regnskap" && git push)
