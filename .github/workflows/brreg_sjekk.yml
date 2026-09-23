@@ -4,7 +4,7 @@ on:
   schedule:
     # Kjører en gang hver dag på angitt tidspunkt. Tidpunkt gitt i UTC
     #- cron: '14 20 * * *'
-  - cron: '14 */2 * * *'
+  - cron: '14 * * * *'
   workflow_dispatch: # Gir deg en knapp for manuell kjøring
 
 jobs:
