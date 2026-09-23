@@ -28,6 +28,9 @@ jobs:
       - name: Kjør Python-script
         env:
           EPOST_PASSORD: ${{ secrets.EPOST_PASSORD }}
+          MOTTAKER_EPOST: ${{ secrets.MIN_EPOST }}
+          AVSENDER_EPOST: ${{ secrets.MIN_EPOST }}
+          ORG_NUMRE: ${{ secrets.ORG_LISTE }}
         run: python script.py
 
       - name: Lagre endringer tilbake til GitHub
