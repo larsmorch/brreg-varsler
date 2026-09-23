@@ -29,31 +29,15 @@ Sørg for at du har script.py og mappen .github/workflows/brreg_sjekk.yml i repo
 For at skriptet skal fungere i skyen, må du legge til nødvendige hemmeligheter under Settings > Secrets and variables > Actions i repository-et ditt:
 
 EPOST_PASSORD: Ditt genererte app-passord for e-post (f.eks. Gmail App Password).
-
 MIN_EPOST: E-postadressen som skal brukes som både avsender og mottaker for varsler.
-
-ORG_LISTE: Listen over organisasjonsnumre du vil overvåke. Denne kan struktureres som en ekte Python-liste med kommentarer, akkurat slik:
-
+ORG_LISTE: Python liste over organisasjonsnumre du vil overvåke. Denne kan struktureres som enPython-liste med kommentarer:
 [
-    "12345678", # Eksempel AS 1
-    "87654321", # Eksempel AS 2
+"12345678", # Eksempel AS 1
+"87654321", # Eksempel AS 2
 ]
 
-3. Konfigurer workflow-miljøvariabler
-Sørg for at brreg_sjekk.yml-filen din sender med disse hemmelighetene som miljøvariabler under kjøringen av script.py:
-
-YAML
-      - name: Kjør Python-script
-        env:
-          EPOST_PASSORD: ${{ secrets.EPOST_PASSORD }}
-          MOTTAKER_EPOST: ${{ secrets.MIN_EPOST }}
-          AVSENDER_EPOST: ${{ secrets.MIN_EPOST }}
-          ORG_LISTE: ${{ secrets.ORG_LISTE }}
-        run: python script.py
-Kjøring
 Manuell kjøring
 Du kan når som helst kjøre skriptet manuelt fra GitHub:
-
 Gå til Actions-fanen i repository-et ditt.
 
 Velg workflowen Sjekk Brønnøysundregistrene i venstre meny.
