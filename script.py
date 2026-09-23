@@ -8,6 +8,9 @@ from email.message import EmailMessage
 # --- KONFIGURASJON ---
 FIRMAER = [
     "911958821", # WG
+    "986082506", # WG Tunnel
+    "914323924", # WG Energy
+    "918285040", # WG Ventures
     "989235699", # Managua
     "911988844", # EMS Holding
     "936760589", # DNA 1392
