@@ -20,7 +20,7 @@ Et automatisert Python-skript som overvåker utvalgte norske bedrifter for nye �
 ├── siste_regnskap.json       # Vedlikeholdt fil som holder styr på sist kjente regnskapsår
 └── README.md
 
-Slik kommer du i gang
+# Slik kommer du i gang
 1. Klon eller opprett prosjektet
 Sørg for at du har script.py og mappen .github/workflows/brreg_sjekk.yml i repository-et ditt.
 
