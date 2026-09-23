@@ -8,7 +8,7 @@ from email.message import EmailMessage
 # --- KONFIGURASJON ---
 FIRMAER = [
     "911958821", # WG
-    "989235699, # Managua
+    "989235699", # Managua
 ]
 
 STATE_FILE = "siste_regnskap.json"
