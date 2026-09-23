@@ -35,8 +35,8 @@ MIN_EPOST: E-postadressen som skal brukes som både avsender og mottaker for var
 ORG_LISTE: Listen over organisasjonsnumre du vil overvåke. Denne kan struktureres som en ekte Python-liste med kommentarer, akkurat slik:
 
 [
-    "911958821", # Eksempel AS 1
-    "989235699", # Eksempel AS 2
+    "12345678", # Eksempel AS 1
+    "87654321", # Eksempel AS 2
 ]
 
 3. Konfigurer workflow-miljøvariabler
