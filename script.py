@@ -5,9 +5,9 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 import time
+import hashlib
 
 # --- KONFIGURASJON ---
-# Henter inn organisasjonslisten fra miljøvariabel (GitHub Secret), inkludert kommentarer
 org_env = os.environ.get("ORG_LISTE")
 if org_env:
     FIRMAER = eval(org_env)
@@ -20,10 +20,14 @@ else:
 
 STATE_FILE = "siste_regnskap.json"
 
-# E-post innstillinger (henter fra miljøvariabler med lokal fallback)
+# E-post innstillinger
 AVSENDER_EPOST = os.environ.get("AVSENDER_EPOST", "din.epost@gmail.com") 
 MOTTAKER_EPOST = os.environ.get("MOTTAKER_EPOST", "din.epost@gmail.com")
 EPOST_PASSORD = os.environ.get("EPOST_PASSORD") 
+
+def hash_orgnr(orgnr):
+    """Omgjør organisasjonsnummeret til en sikker SHA-256 hash for state-filen."""
+    return hashlib.sha256(str(orgnr).strip().encode('utf-8')).hexdigest()
 
 def send_epost(emne, innhold):
     """Sender en e-post via Gmails SMTP-server."""
@@ -62,7 +66,10 @@ def sjekk_flere_regnskap():
     feil_meldinger = []
 
     for orgnr in FIRMAER:
-        # 1. Hent bedriftsnavn fra Enhetsregisteret
+        # Generer hash av organisasjonsnummeret for bruk i state-filen
+        org_hash = hash_orgnr(orgnr)
+
+        # 1. Hent bedriftsnavn fra Enhetsregisteret (bruker ekte orgnr mot API-et)
         enhet_url = f"https://data.brreg.no/enhetsregisteret/api/enheter/{orgnr}"
         bedriftsnavn = f"Org.nr {orgnr}"
         try:
@@ -108,14 +115,16 @@ def sjekk_flere_regnskap():
                 continue
 
             nyeste_aar = max(registrerte_aar)
-            siste_kjente_aar = lagrede_data.get(orgnr, 0)
+            
+            # Hent sist kjente år ved hjelp av hashen til organisasjonsnummeret
+            siste_kjente_aar = lagrede_data.get(org_hash, 0)
 
             if nyeste_aar > siste_kjente_aar:
                 melding = f"{bedriftsnavn} ({orgnr}) har publisert regnskap for år {nyeste_aar}."
                 print(f"🚨 NYTT REGNSKAP: {melding}")
                 
                 nye_regnskap_meldinger.append(melding)
-                lagrede_data[orgnr] = nyeste_aar
+                lagrede_data[org_hash] = nyeste_aar
                 oppdatert = True
             else:
                 print(f"[{bedriftsnavn}] Ingen nye regnskap. Nyeste er {siste_kjente_aar}.")
@@ -125,7 +134,7 @@ def sjekk_flere_regnskap():
             print(feil_melding)
             feil_meldinger.append(feil_melding)
 
-    # Lagre status hvis vi fant nye regnskap
+    # Lagre status med hashede nøkler hvis vi fant nye regnskap
     if oppdatert:
         with open(STATE_FILE, "w", encoding="utf-8") as f:
             json.dump(lagrede_data, f, indent=4)
