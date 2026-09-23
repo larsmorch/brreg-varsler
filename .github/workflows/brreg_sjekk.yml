@@ -2,9 +2,9 @@ name: Sjekk Brønnøysundregistrene
 
 on:
   schedule:
-    # Kjører hver dag kl 08:00 UTC (Tilsvarer kl 09:00 eller 10:00 norsk tid, avhengig av sommertid)
+    # Kjører hver dag kl 08:00 UTC (09:00/10:00 norsk tid)
     - cron: '0 8 * * *'
-  workflow_dispatch: # Legger til en knapp så du kan kjøre scriptet manuelt når du vil
+  workflow_dispatch: # Gjør at du kan kjøre scriptet manuelt med en knapp
 
 jobs:
   sjekk-regnskap:
@@ -30,12 +30,12 @@ jobs:
         run: python script.py
 
       - name: Lagre endringer tilbake til GitHub
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
-        # Legger til alle nye/endrede filer automatisk, uten å krasje hvis de mangler
-        git add -A
-      
-        # Committer og pusher kun hvis det faktisk er gjort en endring
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Oppdatert status for regnskap" && git push)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Legger til alle nye/endrede filer automatisk, uten å krasje hvis de mangler
+          git add -A
+          
+          # Committer og pusher kun hvis det faktisk er gjort en endring
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Oppdatert status for regnskap" && git push)
