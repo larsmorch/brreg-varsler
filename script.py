@@ -13,16 +13,15 @@ FIRMAER = [
 
 STATE_FILE = "siste_regnskap.json"
 
-# E-post innstillinger (Sett inn dine opplysninger)
+# E-post innstillinger (Husk å fylle inn dine egne)
 AVSENDER_EPOST = "din.epost@gmail.com" 
 MOTTAKER_EPOST = "din.epost@gmail.com"
-# Henter passord fra miljøvariabel (Tryggeste løsning)
 EPOST_PASSORD = os.environ.get("EPOST_PASSORD") 
 
 def send_epost(emne, innhold):
     """Sender en e-post via Gmails SMTP-server."""
     if not EPOST_PASSORD:
-        print("Feil: EPOST_PASSORD er ikke satt i miljøvariablene. E-post sendes ikke.")
+        print("Varsel: EPOST_PASSORD er ikke satt i miljøvariablene. E-post sendes ikke.")
         return
 
     msg = EmailMessage()
@@ -32,7 +31,6 @@ def send_epost(emne, innhold):
     msg['To'] = MOTTAKER_EPOST
 
     try:
-        # Sikker tilkobling med SSL
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(AVSENDER_EPOST, EPOST_PASSORD)
@@ -53,7 +51,7 @@ def sjekk_flere_regnskap():
                 lagrede_data = {}
 
     oppdatert = False
-    nye_regnskap_meldinger = [] # Samler opp meldinger til e-posten
+    nye_regnskap_meldinger = [] 
 
     for orgnr in FIRMAER:
         api_url = f"https://data.brreg.no/regnskapsregisteret/regnskap/{orgnr}"
@@ -62,18 +60,24 @@ def sjekk_flere_regnskap():
             response = requests.get(api_url, headers=headers)
             
             if response.status_code == 404:
-                print(f"[{orgnr}] Fant ingen regnskap.")
+                print(f"[{orgnr}] Fant ingen regnskap i registeret (404).")
                 continue
                 
             response.raise_for_status()
             data = response.json()
             
             if isinstance(data, list):
-                registrerte_aar = [item.get("regnskapsaar") for item in data if "regnskapsaar" in item]
+                # Trekker ut de 4 første tegnene (årstallet) fra "tilDato" 
+                registrerte_aar = [
+                    int(item["regnskapsperiode"]["tilDato"][:4]) 
+                    for item in data 
+                    if "regnskapsperiode" in item and "tilDato" in item["regnskapsperiode"]
+                ]
             else:
                 continue
 
             if not registrerte_aar:
+                print(f"[{orgnr}] Klarte ikke å lese ut årstall fra regnskapsperioden.")
                 continue
 
             nyeste_aar = max(registrerte_aar)
@@ -93,18 +97,17 @@ def sjekk_flere_regnskap():
             print(f"[{orgnr}] Feil ved henting av data: {e}")
 
     if oppdatert:
-        # Lagre til JSON-filen
         with open(STATE_FILE, "w", encoding="utf-8") as f:
             json.dump(lagrede_data, f, indent=4)
-        print("Lagret oppdatert status til fil.")
         
-        # Send e-post hvis vi fant nye regnskap
         if nye_regnskap_meldinger:
             emne = "Varsel: Nye årsregnskap tilgjengelig!"
             innhold = "Følgende bedrifter har levert nye årsregnskap til Brønnøysundregistrene:\n\n"
             innhold += "\n".join(nye_regnskap_meldinger)
             
             send_epost(emne, innhold)
+    else:
+        print("Ingen nye endringer funnet.")
 
 if __name__ == "__main__":
     sjekk_flere_regnskap()
