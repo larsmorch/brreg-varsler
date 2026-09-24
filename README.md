@@ -21,21 +21,18 @@ Et automatisert Python-skript som overvåker utvalgte norske bedrifter for nye �
 └── README.md
 ```
 
-Slik kommer du i gang
-1. Klon eller opprett prosjektet
+## Slik kommer du i gang
+- Klon eller opprett prosjektet
 Sørg for at du har script.py og mappen .github/workflows/brreg_sjekk.yml i repository-et ditt.
 
-2. Sett opp GitHub Secrets
+- Sett opp GitHub Secrets
 For at skriptet skal fungere i skyen, må du legge til nødvendige hemmeligheter under Settings > Secrets and variables > Actions i repository-et ditt:
-
+```
 EPOST_PASSORD: Ditt genererte app-passord for e-post (f.eks. Gmail App Password).
 MIN_EPOST: E-postadressen som skal brukes som både avsender og mottaker for varsler.
-ORG_LISTE: Python liste over organisasjonsnumre du vil overvåke. Denne kan struktureres som enPython-liste med kommentarer:
-[
-"12345678", # Eksempel AS 1
-"87654321", # Eksempel AS 2
-]
-
+ORG_LISTE: Organisasjonsnumre du vil overvåke. Struktureres som en Python-liste:
+["12345678", # Eksempel AS 1 "87654321", # Eksempel AS 2]
+```
 Manuell kjøring
 Du kan når som helst kjøre skriptet manuelt fra GitHub:
 Gå til Actions-fanen i repository-et ditt.
