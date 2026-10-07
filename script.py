@@ -82,7 +82,7 @@ def lagre_state(state):
 def registrer_kjoring(state, suksess):
     """Legger til resultatet av den aktuelle kjøringen i historikken."""
     state["kjoringer"].append({
-        "tidspunkt": datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
+        "tidspunkt UTC": datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
         "suksess": suksess
     })
 
